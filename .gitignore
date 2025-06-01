@@ -1,0 +1,41 @@
+# --- GENERAL ---
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.history
+.svn/
+migrate_working_dir/
+*.iml
+
+# --- IDE ---
+.idea/
+.vscode/
+
+# --- FLUTTER ---
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+.metadata
+build/
+**/build/
+
+# --- PLATFORM GENERATED ---
+android/
+ios/
+linux/
+macos/
+web/
+windows/
+
+# --- FLUTTER SYMBOL FILES ---
+app.*.symbols
+app.*.map.json
+
+# --- IGNORE API DOCS ---
+doc/api/
