@@ -1,35 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_model.dart';
+part of 'transaction_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserModelAdapter extends TypeAdapter<UserModel> {
+class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  UserModel read(BinaryReader reader) {
+  TransactionModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserModel(
-      email: fields[0] as String,
-      password: fields[1] as String,
+    return TransactionModel(
+      title: fields[0] as String,
+      amount: fields[1] as int,
+      date: fields[2] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UserModel obj) {
+  void write(BinaryWriter writer, TransactionModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.email)
+      ..write(obj.title)
       ..writeByte(1)
-      ..write(obj.password);
+      ..write(obj.amount)
+      ..writeByte(2)
+      ..write(obj.date);
   }
 
   @override
@@ -38,7 +41,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserModelAdapter &&
+      other is TransactionModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

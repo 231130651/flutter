@@ -6,7 +6,7 @@ class LoginController extends ChangeNotifier {
   String _errorText = '';
   String get errorText => _errorText;
 
-  void handleLogin(String email, String password) {
+  bool handleLogin(String email, String password) {
     final box = Hive.box<UserModel>('users');
 
     final trimmedEmail = email.trim().toLowerCase();
@@ -25,5 +25,6 @@ class LoginController extends ChangeNotifier {
     }
 
     notifyListeners();
+    return isValid; // ⬅️ ini tambahan penting
   }
 }

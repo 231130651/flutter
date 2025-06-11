@@ -98,7 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
                     },
                     child: const Text(
-                      "Sign Up",
+                      "REGISTER",
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),

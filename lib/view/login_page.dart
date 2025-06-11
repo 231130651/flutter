@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:hive/hive.dart';
 import '../controller/login_controller.dart';
-// import '../model/user_model.dart';
 import 'package:provider/provider.dart';
 import 'register_page.dart';
-import 'user_list_page.dart'; // ⬅️ Import halaman debug user list
+import 'user_list_page.dart';
+import 'dashboard_screen.dart'; // ⬅️ Tambahkan import ini
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -86,7 +85,18 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     onPressed: () {
-                      loginController.handleLogin(userCtrl.text, passCtrl.text);
+                      final isSuccess = loginController.handleLogin(
+                        userCtrl.text,
+                        passCtrl.text,
+                      );
+                      if (isSuccess) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardScreen(),
+                          ),
+                        );
+                      }
                       userCtrl.clear();
                       passCtrl.clear();
                     },
@@ -111,7 +121,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-
                 const SizedBox(height: 20),
                 Center(
                   child: Row(
