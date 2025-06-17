@@ -14,7 +14,6 @@ class DatabaseHandler {
     return _database!;
   }
 
-  // Inisialisasi database
   Future<Database> _initDatabase() async {
     String dbPath = await getDatabasesPath();
     String path = join(dbPath, 'keuangan.db');
@@ -27,7 +26,6 @@ class DatabaseHandler {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // Tabel user
     await db.execute('''
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +34,6 @@ class DatabaseHandler {
       )
     ''');
 
-    // Tabel transaksi (kategori langsung disimpan sebagai teks)
     await db.execute('''
       CREATE TABLE transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,11 +44,16 @@ class DatabaseHandler {
         type TEXT NOT NULL
       )
     ''');
-  }
 
-  // ----------------------------
-  // TRANSAKSI
-  // ----------------------------
+    await db.execute('''
+      CREATE TABLE settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+      )
+    ''');
+
+    await db.insert('settings', {'key': 'theme_mode', 'value': 'light'});
+  }
 
   Future<int> insertTransaction(Map<String, dynamic> transaction) async {
     final db = await database;
@@ -82,10 +84,6 @@ class DatabaseHandler {
     );
   }
 
-  // ----------------------------
-  // USER
-  // ----------------------------
-
   Future<int> registerUser(Map<String, dynamic> user) async {
     final db = await database;
     return await db.insert('users', user);
@@ -108,5 +106,31 @@ class DatabaseHandler {
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     final db = await database;
     return await db.query('users');
+  }
+
+  Future<String> getThemeMode() async {
+    final db = await database;
+    final result = await db.query(
+      'settings',
+      where: 'key = ?',
+      whereArgs: ['theme_mode'],
+      limit: 1,
+    );
+    if (result.isNotEmpty) {
+      return result.first['value'] as String;
+    } else {
+      await db.insert('settings', {'key': 'theme_mode', 'value': 'light'});
+      return 'light';
+    }
+  }
+
+  Future<void> setThemeMode(String mode) async {
+    final db = await database;
+    await db.update(
+      'settings',
+      {'value': mode},
+      where: 'key = ?',
+      whereArgs: ['theme_mode'],
+    );
   }
 }
