@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../controller/login_controller.dart';
-import 'package:provider/provider.dart';
+import '../controller/database_handler.dart';
+import 'dashboard_screen.dart';
 import 'register_page.dart';
-import 'user_list_page.dart';
-import 'dashboard_screen.dart'; // ⬅️ Tambahkan import ini
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,14 +11,46 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController userCtrl = TextEditingController();
-  TextEditingController passCtrl = TextEditingController();
+  final TextEditingController userCtrl = TextEditingController();
+  final TextEditingController passCtrl = TextEditingController();
+  final DatabaseHandler dbHandler = DatabaseHandler();
   bool isPasswordVisible = false;
+
+  void _showSnackBar(String msg, {bool success = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _handleLogin() async {
+    final email = userCtrl.text.trim();
+    final password = passCtrl.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar("Email dan password wajib diisi!");
+      return;
+    }
+
+    final user = await dbHandler.loginUser(email, password);
+    if (user != null && mounted) {
+      _showSnackBar("Login berhasil!", success: true);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+      );
+    } else {
+      _showSnackBar("Email atau password salah.");
+    }
+
+    userCtrl.clear();
+    passCtrl.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final loginController = Provider.of<LoginController>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -56,10 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: 40),
-                const Text(
-                  "LOGIN",
-                  style: TextStyle(fontSize: 18, letterSpacing: 2),
-                ),
+                const Text("LOGIN", style: TextStyle(fontSize: 18, letterSpacing: 2)),
                 const SizedBox(height: 25),
                 _inputField("E-MAIL", Icons.email_outlined, userCtrl),
                 _passwordField(),
@@ -67,10 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {},
-                    child: Text(
-                      "Lupa password?",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    child: const Text("Lupa password?", style: TextStyle(color: Colors.grey)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -84,43 +108,10 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    onPressed: () {
-                      final isSuccess = loginController.handleLogin(
-                        userCtrl.text,
-                        passCtrl.text,
-                      );
-                      if (isSuccess) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const DashboardScreen(),
-                          ),
-                        );
-                      }
-                      userCtrl.clear();
-                      passCtrl.clear();
-                    },
-                    child: const Text(
-                      "LOGIN",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    onPressed: _handleLogin,
+                    child: const Text("LOGIN", style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 ),
-                if (loginController.errorText.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: Text(
-                        loginController.errorText,
-                        style: TextStyle(
-                          color:
-                              loginController.errorText.contains('berhasil')
-                                  ? Colors.green
-                                  : Colors.red,
-                        ),
-                      ),
-                    ),
-                  ),
                 const SizedBox(height: 20),
                 Center(
                   child: Row(
@@ -131,25 +122,13 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterPage(),
-                            ),
+                            MaterialPageRoute(builder: (_) => const RegisterPage()),
                           );
                         },
                         child: const Text("Register"),
                       ),
+                      
                     ],
-                  ),
-                ),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const UserListPage()),
-                      );
-                    },
-                    child: const Text("User List"),
                   ),
                 ),
               ],
@@ -160,11 +139,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _inputField(
-    String label,
-    IconData icon,
-    TextEditingController controller,
-  ) {
+  Widget _inputField(String label, IconData icon, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -185,10 +160,7 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "PASSWORD",
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-        ),
+        Text("PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
         TextField(
           controller: passCtrl,
           obscureText: !isPasswordVisible,

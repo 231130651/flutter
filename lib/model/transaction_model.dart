@@ -1,21 +1,35 @@
-import 'package:hive/hive.dart';
+class Transaction {
+  final int? id;
+  final String type;
+  final String description;
+  final int amount;
+  final String category;
 
-part 'transaction_model.g.dart';
-
-@HiveType(typeId: 1) // GANTI dari 0 ke 1 untuk hindari konflik
-class TransactionModel extends HiveObject {
-  @HiveField(0)
-  String title;
-
-  @HiveField(1)
-  int amount;
-
-  @HiveField(2)
-  DateTime date;
-
-  TransactionModel({
-    required this.title,
+  Transaction({
+    this.id,
+    required this.type,
+    required this.description,
     required this.amount,
-    required this.date,
+    required this.category,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'type': type,
+      'description': description,
+      'amount': amount,
+      'category': category,
+    };
+  }
+
+  factory Transaction.fromMap(Map<String, dynamic> map) {
+    return Transaction(
+      id: map['id'],
+      type: map['type'],
+      description: map['description'],
+      amount: map['amount'],
+      category: map['category'],
+    );
+  }
 }

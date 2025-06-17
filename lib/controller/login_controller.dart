@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import '../model/user_model.dart';
+import '../controller/database_handler.dart'; // ganti sesuai path kalau perlu
 
 class LoginController extends ChangeNotifier {
+  final DatabaseHandler _db = DatabaseHandler();
+
   String _errorText = '';
   String get errorText => _errorText;
 
-  bool handleLogin(String email, String password) {
-    final box = Hive.box<UserModel>('users');
+  Future<bool> handleLogin(String username, String password) async {
+    final user = await _db.loginUser(username.trim(), password.trim());
 
-    final trimmedEmail = email.trim().toLowerCase();
-    final trimmedPassword = password.trim();
-
-    final isValid = box.values.any(
-      (user) =>
-          user.email.trim().toLowerCase() == trimmedEmail &&
-          user.password.trim() == trimmedPassword,
-    );
-
-    if (isValid) {
+    if (user != null) {
       _errorText = 'Login berhasil';
+      notifyListeners();
+      return true;
     } else {
-      _errorText = 'Email atau password salah.';
+      _errorText = 'Username atau password salah.';
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
-    return isValid; // ⬅️ ini tambahan penting
   }
 }

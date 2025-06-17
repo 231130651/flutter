@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../controller/register_controller.dart';
+import '../controller/database_handler.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -10,16 +9,58 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  TextEditingController emailCtrl = TextEditingController();
-  TextEditingController passCtrl = TextEditingController();
-  TextEditingController confirmCtrl = TextEditingController();
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passCtrl = TextEditingController();
+  final TextEditingController confirmCtrl = TextEditingController();
+  final DatabaseHandler dbHandler = DatabaseHandler();
+
   bool isPasswordVisible = false;
   bool isConfirmVisible = false;
 
+  void _showSnackBar(String msg, {bool success = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _handleRegister() async {
+    final email = emailCtrl.text.trim();
+    final pass = passCtrl.text;
+    final confirm = confirmCtrl.text;
+
+    if (email.isEmpty || pass.isEmpty || confirm.isEmpty) {
+      _showSnackBar("Semua field wajib diisi!");
+      return;
+    }
+
+    if (pass != confirm) {
+      _showSnackBar("Password Salah!");
+      return;
+    }
+
+    final existingUsers = await dbHandler.getAllUsers();
+    final exists = existingUsers.any((user) => user['username'] == email);
+
+    if (exists) {
+      _showSnackBar("Email sudah terdaftar!");
+      return;
+    }
+
+    await dbHandler.registerUser({
+      'username': email,
+      'password': pass,
+    });
+
+    if (!mounted) return;
+    _showSnackBar("Registrasi berhasil!", success: true);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final registerController = Provider.of<RegisterController>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -55,10 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
                 const SizedBox(height: 40),
-                const Text(
-                  "REGISTER",
-                  style: TextStyle(fontSize: 18, letterSpacing: 2),
-                ),
+                const Text("REGISTER", style: TextStyle(fontSize: 18, letterSpacing: 2)),
                 const SizedBox(height: 25),
                 _inputField("E-MAIL", Icons.email_outlined, emailCtrl),
                 _passwordField(),
@@ -74,33 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    onPressed: () {
-                      final email = emailCtrl.text.trim();
-                      final pass = passCtrl.text;
-                      final confirm = confirmCtrl.text;
-
-                      if (email.isEmpty || pass.isEmpty || confirm.isEmpty) {
-                        _showSnackBar(context, "Semua field wajib diisi!");
-                        return;
-                      }
-
-                      if (pass != confirm) {
-                        _showSnackBar(context, "Password Salah!");
-                        return;
-                      }
-
-                      final success = registerController.register(email, pass);
-                      if (success) {
-                        _showSnackBar(context, "Registrasi berhasil!");
-                        Navigator.pop(context);
-                      } else {
-                        _showSnackBar(context, "Email sudah terdaftar!");
-                      }
-                    },
-                    child: const Text(
-                      "REGISTER",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    onPressed: _handleRegister,
+                    child: const Text("REGISTER", style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -124,11 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _inputField(
-    String label,
-    IconData icon,
-    TextEditingController controller,
-  ) {
+  Widget _inputField(String label, IconData icon, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -149,24 +158,15 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "PASSWORD",
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-        ),
+        Text("PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
         TextField(
           controller: passCtrl,
           obscureText: !isPasswordVisible,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
-              icon: Icon(
-                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  isPasswordVisible = !isPasswordVisible;
-                });
-              },
+              icon: Icon(isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+              onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
             ),
             border: const UnderlineInputBorder(),
           ),
@@ -180,24 +180,15 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "KONFIRMASI PASSWORD",
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-        ),
+        Text("KONFIRMASI PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
         TextField(
           controller: confirmCtrl,
           obscureText: !isConfirmVisible,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.lock),
             suffixIcon: IconButton(
-              icon: Icon(
-                isConfirmVisible ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  isConfirmVisible = !isConfirmVisible;
-                });
-              },
+              icon: Icon(isConfirmVisible ? Icons.visibility : Icons.visibility_off),
+              onPressed: () => setState(() => isConfirmVisible = !isConfirmVisible),
             ),
             border: const UnderlineInputBorder(),
           ),
@@ -205,9 +196,5 @@ class _RegisterPageState extends State<RegisterPage> {
         const SizedBox(height: 15),
       ],
     );
-  }
-
-  void _showSnackBar(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

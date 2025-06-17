@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import '../model/user_model.dart';
+import '../controller/database_handler.dart'; // sesuaikan jika berbeda
 
 class RegisterController extends ChangeNotifier {
-  bool register(String email, String password) {
-    final box = Hive.box<UserModel>('users');
-    final isExist = box.values.any((user) => user.email == email);
+  final DatabaseHandler _db = DatabaseHandler();
+
+  Future<bool> register(String username, String password) async {
+    final existingUsers = await _db.getAllUsers();
+    final isExist = existingUsers.any((user) => user['username'] == username);
 
     if (isExist) return false;
 
-    box.add(UserModel(email: email, password: password));
+    await _db.registerUser({
+      'username': username.trim(),
+      'password': password.trim(),
+    });
+
     return true;
   }
 }
