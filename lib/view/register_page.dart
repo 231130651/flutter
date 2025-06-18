@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/register_controller.dart';
+import 'widgets/custom_button.dart';
+import 'widgets/custom_input.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -31,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final pass = passCtrl.text;
     final confirm = confirmCtrl.text;
     if (username.isEmpty || pass.isEmpty || confirm.isEmpty) {
-      _showSnackBar("Semua field wajib diisi!");
+      _showSnackBar("Semua kolom wajib diisi!");
       return;
     }
     if (pass != confirm) {
@@ -52,6 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final hintColor = Theme.of(context).hintColor;
+
     return Scaffold(
       backgroundColor: bgColor,
       body: Padding(
@@ -89,23 +93,49 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 40),
                 const Text("REGISTER", style: TextStyle(fontSize: 18, letterSpacing: 2)),
                 const SizedBox(height: 25),
-                _inputField("USERNAME", Icons.account_circle_outlined, userCtrl),
-                _passwordField(),
-                _confirmPasswordField(),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD84040),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                CustomInput(
+                  label: "USERNAME",
+                  icon: Icons.account_circle_outlined,
+                  controller: userCtrl,
+                ),
+                CustomInput(
+                  label: "PASSWORD",
+                  icon: Icons.lock_outline,
+                  controller: passCtrl,
+                  obscureText: !isPasswordVisible,
+                  suffix: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: hintColor,
                     ),
-                    onPressed: _handleRegister,
-                    child: const Text("REGISTER", style: TextStyle(fontSize: 16, color: Colors.white)),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
                   ),
+                ),
+                CustomInput(
+                  label: "KONFIRMASI PASSWORD",
+                  icon: Icons.lock,
+                  controller: confirmCtrl,
+                  obscureText: !isConfirmVisible,
+                  suffix: IconButton(
+                    icon: Icon(
+                      isConfirmVisible ? Icons.visibility : Icons.visibility_off,
+                      color: hintColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isConfirmVisible = !isConfirmVisible;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 10),
+                CustomButton(
+                  label: "REGISTER",
+                  onPressed: _handleRegister,
                 ),
                 const SizedBox(height: 20),
                 Center(
@@ -125,67 +155,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _inputField(String label, IconData icon, TextEditingController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon),
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 15),
-      ],
-    );
-  }
-
-  Widget _passwordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-        TextField(
-          controller: passCtrl,
-          obscureText: !isPasswordVisible,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.lock_outline),
-            suffixIcon: IconButton(
-              icon: Icon(isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-              onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
-            ),
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 15),
-      ],
-    );
-  }
-
-  Widget _confirmPasswordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("KONFIRMASI PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-        TextField(
-          controller: confirmCtrl,
-          obscureText: !isConfirmVisible,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.lock),
-            suffixIcon: IconButton(
-              icon: Icon(isConfirmVisible ? Icons.visibility : Icons.visibility_off),
-              onPressed: () => setState(() => isConfirmVisible = !isConfirmVisible),
-            ),
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 15),
-      ],
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../controller/database_handler.dart';
 import 'dashboard_screen.dart';
 import 'register_page.dart';
+import 'widgets/custom_button.dart';
+import 'widgets/custom_input.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -72,11 +74,10 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Column(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           radius: 60,
                           backgroundColor: Color(0xFFF8F2DE),
-                          backgroundImage:
-                              const AssetImage('assets/money.png'),
+                          backgroundImage: AssetImage('assets/money.png'),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -99,26 +100,33 @@ class _LoginPageState extends State<LoginPage> {
                         letterSpacing: 2,
                         color: textColor)),
                 const SizedBox(height: 25),
-                _inputField("USERNAME", Icons.account_circle_outlined,
-                    userCtrl, textColor, hintColor),
-                _passwordField(textColor, hintColor),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primary,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                CustomInput(
+                  label: "USERNAME",
+                  icon: Icons.account_circle_outlined,
+                  controller: userCtrl,
+                ),
+                CustomInput(
+                  label: "PASSWORD",
+                  icon: Icons.lock_outline,
+                  controller: passCtrl,
+                  obscureText: !isPasswordVisible,
+                  suffix: IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: hintColor,
                     ),
-                    onPressed: _handleLogin,
-                    child: const Text("LOGIN",
-                        style: TextStyle(fontSize: 16)),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
                   ),
+                ),
+                CustomButton(
+                  label: "LOGIN",
+                  onPressed: _handleLogin,
                 ),
                 const SizedBox(height: 20),
                 Center(
@@ -144,60 +152,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _inputField(String label, IconData icon,
-      TextEditingController controller, Color? textColor, Color? hintColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: TextStyle(fontSize: 12, color: hintColor)),
-        TextField(
-          controller: controller,
-          style: TextStyle(color: textColor),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: hintColor),
-            hintStyle: TextStyle(color: hintColor),
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 15),
-      ],
-    );
-  }
-
-  Widget _passwordField(Color? textColor, Color? hintColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("PASSWORD", style: TextStyle(fontSize: 12, color: hintColor)),
-        TextField(
-          controller: passCtrl,
-          obscureText: !isPasswordVisible,
-          style: TextStyle(color: textColor),
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock_outline, color: hintColor),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isPasswordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
-                color: hintColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  isPasswordVisible = !isPasswordVisible;
-                });
-              },
-            ),
-            hintStyle: TextStyle(color: hintColor),
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 15),
-      ],
     );
   }
 }
