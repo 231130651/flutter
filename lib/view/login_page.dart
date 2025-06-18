@@ -26,15 +26,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    final email = userCtrl.text.trim();
+    final username = userCtrl.text.trim();
     final password = passCtrl.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackBar("Email dan password wajib diisi!");
+    if (username.isEmpty || password.isEmpty) {
+      _showSnackBar("username dan password wajib diisi!");
       return;
     }
 
-    final user = await dbHandler.loginUser(email, password);
+    final user = await dbHandler.loginUser(username, password);
     if (user != null && mounted) {
       _showSnackBar("Login berhasil!", success: true);
       Navigator.pushReplacement(
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
     } else {
-      _showSnackBar("Email atau password salah.");
+      _showSnackBar("username atau password salah.");
     }
 
     userCtrl.clear();
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
                 const Text("LOGIN", style: TextStyle(fontSize: 18, letterSpacing: 2)),
                 const SizedBox(height: 25),
-                _inputField("E-MAIL", Icons.email_outlined, userCtrl),
+                _inputField("USERNAME", Icons.account_circle_outlined, userCtrl),
                 _passwordField(),
                 SizedBox(
                   width: double.infinity,

@@ -10,7 +10,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController userCtrl = TextEditingController();
   final TextEditingController passCtrl = TextEditingController();
   final TextEditingController confirmCtrl = TextEditingController();
 
@@ -27,11 +27,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
-    final email = emailCtrl.text.trim();
+    final username = userCtrl.text.trim();
     final pass = passCtrl.text;
     final confirm = confirmCtrl.text;
 
-    if (email.isEmpty || pass.isEmpty || confirm.isEmpty) {
+    if (username.isEmpty || pass.isEmpty || confirm.isEmpty) {
       _showSnackBar("Semua field wajib diisi!");
       return;
     }
@@ -42,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final success = await Provider.of<RegisterController>(context, listen: false)
-        .register(email, pass);
+        .register(username, pass);
 
     if (!mounted) return;
 
@@ -50,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
       _showSnackBar("Registrasi berhasil!", success: true);
       Navigator.pop(context);
     } else {
-      _showSnackBar("Email sudah terdaftar.");
+      _showSnackBar("username sudah terdaftar.");
     }
   }
 
@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 40),
                 const Text("REGISTER", style: TextStyle(fontSize: 18, letterSpacing: 2)),
                 const SizedBox(height: 25),
-                _inputField("E-MAIL", Icons.email_outlined, emailCtrl),
+                _inputField("USERNAME", Icons.account_circle_outlined, userCtrl),
                 _passwordField(),
                 _confirmPasswordField(),
                 const SizedBox(height: 10),
