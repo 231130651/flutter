@@ -2,13 +2,15 @@ class Transaction {
   final int? id;
   final String type;
   final String description;
-  final int amount;
+  final String date;
+  final double amount;
   final String category;
 
   Transaction({
     this.id,
     required this.type,
     required this.description,
+    required this.date,
     required this.amount,
     required this.category,
   });
@@ -18,6 +20,7 @@ class Transaction {
       'id': id,
       'type': type,
       'description': description,
+      'date': date,
       'amount': amount,
       'category': category,
     };
@@ -28,6 +31,7 @@ class Transaction {
       id: map['id'],
       type: map['type'],
       description: map['description'],
+      date: map['date'],
       amount: map['amount'],
       category: map['category'],
     );

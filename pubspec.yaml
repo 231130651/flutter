@@ -36,6 +36,7 @@ dependencies:
   math_expressions: ^2.2.0
   sqflite: ^2.3.0
   path: ^1.9.0
+  intl: ^0.18.1
 
   
 

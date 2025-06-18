@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tugas2/controller/register_controller.dart';
-import 'package:tugas2/controller/login_controller.dart';
-import 'package:tugas2/view/add_transaction_page.dart';
-import 'package:tugas2/view/splash.dart';
-import 'package:tugas2/view/login_page.dart';
-import 'package:tugas2/view/register_page.dart';
-import 'package:tugas2/view/dashboard_screen.dart';
-import 'package:tugas2/controller/database_handler.dart';
+import 'controller/register_controller.dart';
+import 'controller/login_controller.dart';
+import 'view/splash.dart';
+import 'view/login_page.dart';
+import 'view/register_page.dart';
+import 'view/dashboard_screen.dart';
+import 'controller/database_handler.dart';
+import 'provider/transaction_provider.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
@@ -24,7 +24,7 @@ class InitApp extends StatefulWidget {
 }
 
 class _InitAppState extends State<InitApp> {
-  ThemeMode? _initialTheme;
+  bool _themeLoaded = false;
 
   @override
   void initState() {
@@ -36,14 +36,12 @@ class _InitAppState extends State<InitApp> {
     final db = DatabaseHandler();
     final theme = await db.getThemeMode();
     themeNotifier.value = theme == 'dark' ? ThemeMode.dark : ThemeMode.light;
-    setState(() {
-      _initialTheme = themeNotifier.value;
-    });
+    setState(() => _themeLoaded = true);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_initialTheme == null) {
+    if (!_themeLoaded) {
       return const MaterialApp(home: SizedBox());
     }
 
@@ -60,6 +58,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => RegisterController()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()..fetchTransactions()),
       ],
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: themeNotifier,
@@ -94,7 +93,6 @@ class MyApp extends StatelessWidget {
             routes: {
               '/': (context) => const SplashScreen(),
               '/login': (context) => const LoginPage(),
-              '/addTransaction': (context) => const AddTransactionPage(),
               '/register': (context) => const RegisterPage(),
               '/dashboard': (context) => const DashboardScreen(),
             },
