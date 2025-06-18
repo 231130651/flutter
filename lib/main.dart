@@ -87,7 +87,30 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            darkTheme: ThemeData.dark(),
+            darkTheme: ThemeData(
+              scaffoldBackgroundColor: const Color(0xFF1B1B1B),
+              primaryColor: const Color(0xFFD84040),
+              colorScheme: ColorScheme.dark(
+              primary: const Color(0xFFD84040),
+              secondary: const Color(0xFFA31D1D),
+              surface: const Color(0xFF1B1B1B),
+              onPrimary: Colors.white,
+              error: Colors.red,
+              onError: Colors.white,
+            ),
+            textTheme: const TextTheme(
+              bodyMedium: TextStyle(color: Colors.white),
+              bodyLarge: TextStyle(color: Colors.white),
+              titleMedium: TextStyle(color: Colors.white),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(color: Colors.white),
+              hintStyle: TextStyle(color: Colors.white70),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white70),
+              ),
+            ),
+          ),
             themeMode: currentMode,
             initialRoute: '/',
             routes: {

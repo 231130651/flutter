@@ -20,7 +20,9 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: success ? Colors.green : Colors.red,
+        backgroundColor: success
+            ? Colors.green
+            : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -30,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = passCtrl.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      _showSnackBar("username dan password wajib diisi!");
+      _showSnackBar("Username dan password wajib diisi!");
       return;
     }
 
@@ -42,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
     } else {
-      _showSnackBar("username atau password salah.");
+      _showSnackBar("Username atau password salah.");
     }
 
     userCtrl.clear();
@@ -51,8 +53,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
+    final hintColor = Theme.of(context).hintColor;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
@@ -66,10 +72,11 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Column(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 60,
-                          backgroundColor: Color(0xFFF8F2DE),
-                          backgroundImage: AssetImage('assets/money.png'),
+                          backgroundColor: Color(0xFFFFF3D3),
+                          backgroundImage:
+                              const AssetImage('assets/money.png'),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -86,22 +93,31 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: 40),
-                const Text("LOGIN", style: TextStyle(fontSize: 18, letterSpacing: 2)),
+                Text("LOGIN",
+                    style: TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 2,
+                        color: textColor)),
                 const SizedBox(height: 25),
-                _inputField("USERNAME", Icons.account_circle_outlined, userCtrl),
-                _passwordField(),
+                _inputField("USERNAME", Icons.account_circle_outlined,
+                    userCtrl, textColor, hintColor),
+                _passwordField(textColor, hintColor),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD84040),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primary,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
                     onPressed: _handleLogin,
-                    child: const Text("LOGIN", style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text("LOGIN",
+                        style: TextStyle(fontSize: 16)),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -109,17 +125,17 @@ class _LoginPageState extends State<LoginPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Tidak punya akun?"),
+                      Text("Tidak punya akun?", style: TextStyle(color: textColor)),
                       TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const RegisterPage()),
+                            MaterialPageRoute(
+                                builder: (_) => const RegisterPage()),
                           );
                         },
                         child: const Text("Register"),
                       ),
-                      
                     ],
                   ),
                 ),
@@ -131,15 +147,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _inputField(String label, IconData icon, TextEditingController controller) {
+  Widget _inputField(String label, IconData icon,
+      TextEditingController controller, Color? textColor, Color? hintColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        Text(label,
+            style: TextStyle(fontSize: 12, color: hintColor)),
         TextField(
           controller: controller,
+          style: TextStyle(color: textColor),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon),
+            prefixIcon: Icon(icon, color: hintColor),
+            hintStyle: TextStyle(color: hintColor),
             border: const UnderlineInputBorder(),
           ),
         ),
@@ -148,19 +168,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _passwordField() {
+  Widget _passwordField(Color? textColor, Color? hintColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("PASSWORD", style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        Text("PASSWORD", style: TextStyle(fontSize: 12, color: hintColor)),
         TextField(
           controller: passCtrl,
           obscureText: !isPasswordVisible,
+          style: TextStyle(color: textColor),
           decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.lock_outline),
+            prefixIcon: Icon(Icons.lock_outline, color: hintColor),
             suffixIcon: IconButton(
               icon: Icon(
-                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                isPasswordVisible
+                    ? Icons.visibility
+                    : Icons.visibility_off,
+                color: hintColor,
               ),
               onPressed: () {
                 setState(() {
@@ -168,6 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
             ),
+            hintStyle: TextStyle(color: hintColor),
             border: const UnderlineInputBorder(),
           ),
         ),

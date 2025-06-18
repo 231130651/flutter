@@ -133,4 +133,9 @@ class DatabaseHandler {
       whereArgs: ['theme_mode'],
     );
   }
+
+  Future<void> deleteAllTransactions() async {
+    final db = await database;
+    await db.delete('transactions');
+  }
 }

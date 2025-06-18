@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../controller/database_handler.dart';
 import '../../main.dart';
 import '../../controller/login_controller.dart';
+import '../../provider/transaction_provider.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -36,6 +37,36 @@ class _ProfileTabState extends State<ProfileTab> {
     await db.setThemeMode(mode);
     themeNotifier.value = mode == 'dark' ? ThemeMode.dark : ThemeMode.light;
     setState(() => selectedTheme = mode);
+  }
+
+  Future<void> _confirmAndResetData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Reset"),
+        content: const Text("Yakin ingin menghapus semua data?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Ya"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await db.deleteAllTransactions();
+      if (!mounted) return;
+      Provider.of<TransactionProvider>(context, listen: false).fetchTransactions();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Data berhasil direset")),
+      );
+      setState(() {});
+    }
   }
 
   @override
@@ -72,18 +103,36 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Provider.of<LoginController>(context, listen: false).logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFD84040),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text('Logout'),
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _confirmAndResetData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[700],
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Reset Data'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Provider.of<LoginController>(context, listen: false).logout();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD84040),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Logout'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

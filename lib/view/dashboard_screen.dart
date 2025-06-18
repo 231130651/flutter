@@ -44,22 +44,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('BaBa Wallet'),
         centerTitle: true,
-        backgroundColor: const Color(0xFFD84040),
-        foregroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.primary, 
+          foregroundColor: Theme.of(context).colorScheme.onPrimary, 
       ),
       body: pages[_selectedIndex],
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               onPressed: _openTransactionForm,
-              backgroundColor: const Color(0xFFD84040),
-              foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary, 
+                foregroundColor: Theme.of(context).colorScheme.onPrimary, 
               child: const Icon(Icons.add),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFFD84040),
-        unselectedItemColor: Colors.grey,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Theme.of(context).unselectedWidgetColor,
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
