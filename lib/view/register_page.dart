@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../controller/database_handler.dart';
+import 'package:provider/provider.dart';
+import '../controller/register_controller.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -12,7 +13,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController passCtrl = TextEditingController();
   final TextEditingController confirmCtrl = TextEditingController();
-  final DatabaseHandler dbHandler = DatabaseHandler();
 
   bool isPasswordVisible = false;
   bool isConfirmVisible = false;
@@ -37,26 +37,21 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     if (pass != confirm) {
-      _showSnackBar("Password Salah!");
+      _showSnackBar("Password tidak cocok!");
       return;
     }
 
-    final existingUsers = await dbHandler.getAllUsers();
-    final exists = existingUsers.any((user) => user['username'] == email);
-
-    if (exists) {
-      _showSnackBar("Email sudah terdaftar!");
-      return;
-    }
-
-    await dbHandler.registerUser({
-      'username': email,
-      'password': pass,
-    });
+    final success = await Provider.of<RegisterController>(context, listen: false)
+        .register(email, pass);
 
     if (!mounted) return;
-    _showSnackBar("Registrasi berhasil!", success: true);
-    Navigator.pop(context);
+
+    if (success) {
+      _showSnackBar("Registrasi berhasil!", success: true);
+      Navigator.pop(context);
+    } else {
+      _showSnackBar("Email sudah terdaftar.");
+    }
   }
 
   @override

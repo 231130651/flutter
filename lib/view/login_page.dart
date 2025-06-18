@@ -90,14 +90,6 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 25),
                 _inputField("E-MAIL", Icons.email_outlined, userCtrl),
                 _passwordField(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text("Lupa password?", style: TextStyle(color: Colors.grey)),
-                  ),
-                ),
-                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   height: 50,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../controller/database_handler.dart';
 import '../../main.dart';
+import '../../controller/login_controller.dart';
 
 class ProfileTab extends StatefulWidget {
-    const ProfileTab({super.key});
-  
+  const ProfileTab({super.key});
+
   @override
   State<ProfileTab> createState() => _ProfileTabState();
 }
@@ -73,6 +75,7 @@ class _ProfileTabState extends State<ProfileTab> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              Provider.of<LoginController>(context, listen: false).logout();
               Navigator.pushReplacementNamed(context, '/login');
             },
             style: ElevatedButton.styleFrom(

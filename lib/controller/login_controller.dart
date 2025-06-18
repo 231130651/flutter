@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../controller/database_handler.dart'; // ganti sesuai path kalau perlu
+import '../controller/database_handler.dart';
 
 class LoginController extends ChangeNotifier {
   final DatabaseHandler _db = DatabaseHandler();
@@ -7,17 +7,29 @@ class LoginController extends ChangeNotifier {
   String _errorText = '';
   String get errorText => _errorText;
 
-  Future<bool> handleLogin(String username, String password) async {
-    final user = await _db.loginUser(username.trim(), password.trim());
+  Map<String, dynamic>? _user;
+  Map<String, dynamic>? get user => _user;
 
-    if (user != null) {
+  bool get isLoggedIn => _user != null;
+
+  Future<bool> handleLogin(String username, String password) async {
+    final result = await _db.loginUser(username.trim(), password.trim());
+
+    if (result != null) {
+      _user = result;
       _errorText = 'Login berhasil';
       notifyListeners();
       return true;
     } else {
+      _user = null;
       _errorText = 'Username atau password salah.';
       notifyListeners();
       return false;
     }
+  }
+
+  void logout() {
+    _user = null;
+    notifyListeners();
   }
 }
