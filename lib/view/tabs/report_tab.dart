@@ -102,11 +102,11 @@ class _ReportTabState extends State<ReportTab> {
                   children: [
                     Column(children: [
                       const Text('Pendapatan', style: TextStyle(color: Colors.green)),
-                      Text('Rp ${income.toStringAsFixed(0)}'),
+                      Text('Rp. ${income.toStringAsFixed(0)}'),
                     ]),
                     Column(children: [
                       const Text('Pengeluaran', style: TextStyle(color: Colors.red)),
-                      Text('Rp ${expense.toStringAsFixed(0)}'),
+                      Text('Rp. ${expense.toStringAsFixed(0)}'),
                     ]),
                   ],
                 ),

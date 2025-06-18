@@ -30,22 +30,17 @@ class _RegisterPageState extends State<RegisterPage> {
     final username = userCtrl.text.trim();
     final pass = passCtrl.text;
     final confirm = confirmCtrl.text;
-
     if (username.isEmpty || pass.isEmpty || confirm.isEmpty) {
       _showSnackBar("Semua field wajib diisi!");
       return;
     }
-
     if (pass != confirm) {
       _showSnackBar("Password tidak cocok!");
       return;
     }
-
     final success = await Provider.of<RegisterController>(context, listen: false)
         .register(username, pass);
-
     if (!mounted) return;
-
     if (success) {
       _showSnackBar("Registrasi berhasil!", success: true);
       Navigator.pop(context);
@@ -56,8 +51,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(

@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundColor: Color(0xFFFFF3D3),
+                          backgroundColor: Color(0xFFF8F2DE),
                           backgroundImage:
                               const AssetImage('assets/money.png'),
                         ),

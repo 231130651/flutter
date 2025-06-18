@@ -33,7 +33,6 @@ class HomeTab extends StatelessWidget {
         ],
       ),
     );
-
     if (shouldDelete == true) {
       await DatabaseHandler().deleteTransaction(id);
       if (context.mounted) {
@@ -41,7 +40,7 @@ class HomeTab extends StatelessWidget {
       }
     }
   }
-
+  
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TransactionProvider>();
@@ -59,79 +58,81 @@ class HomeTab extends StatelessWidget {
           children: [
             Column(children: [
               const Text('Pendapatan', style: TextStyle(color: Colors.green)),
-              Text(income.toStringAsFixed(2), style: TextStyle(color: textColor)),
+              Text("Rp. ${income.toStringAsFixed(2)}", style: TextStyle(color: textColor)),
             ]),
             Column(children: [
               const Text('Pengeluaran', style: TextStyle(color: Colors.red)),
-              Text(expense.toStringAsFixed(2), style: TextStyle(color: textColor)),
+              Text("Rp. ${expense.toStringAsFixed(2)}", style: TextStyle(color: textColor)),
             ]),
             Column(children: [
               const Text('Total'),
-              Text(total.toStringAsFixed(2), style: TextStyle(color: textColor)),
+              Text("Rp. ${total.toStringAsFixed(2)}", style: TextStyle(color: textColor)),
             ]),
           ],
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: transactions.isEmpty
-              ? const Center(child: Text('Tidak ada data'))
-              : ListView.separated(
-                  itemCount: transactions.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final tx = transactions[index];
-                    final rawDate = DateTime.tryParse(tx.date);
-                    final formattedDate = rawDate != null
-                        ? DateFormat('dd-MM-yyyy').format(rawDate)
-                        : '-';
-
-                    return ListTile(
-                      dense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Kategori: ${tx.category} (${tx.type})",
-                              style: TextStyle(color: textColor, overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 18),
-                                onPressed: () => _openTransactionForm(context, tx),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                                onPressed: tx.id != null
-                                    ? () => _confirmDelete(context, tx.id!)
-                                    : null,
-                              ),
-                              Text(
-                                tx.amount.toString(),
-                                style: TextStyle(
-                                  color: tx.type == 'income' ? Colors.green : Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          "Tanggal: $formattedDate",
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ),
-                    );
-                  },
+          child: transactions.isEmpty ? const Center(child: Text('Tidak ada data')) : ListView.builder(
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final tx = transactions[index];
+                final rawDate = DateTime.tryParse(tx.date);
+                final formattedDate = rawDate != null
+                    ? DateFormat('dd-MM-yyyy').format(rawDate)
+                    : '-';
+    return Column(
+      children: [
+        if (index == 0) const Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Kategori: ${tx.category} (${tx.type})", style: TextStyle(color: textColor)),
+                    Text("Tanggal: $formattedDate", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(tx.description, style: TextStyle(color: textColor)),
+                  ],
                 ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Rp. ${tx.amount.toString()}",
+                    style: TextStyle(
+                      color: tx.type == 'income' ? Colors.green : Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, size: 18),
+                        onPressed: () => _openTransactionForm(context, tx),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                        onPressed: tx.id != null
+                            ? () => _confirmDelete(context, tx.id!)
+                            : null,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+        const Divider(height: 1),
       ],
     );
+    }),
+    )],
+  );
   }
 }
