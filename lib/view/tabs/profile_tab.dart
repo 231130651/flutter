@@ -88,7 +88,7 @@ class _ProfileTabState extends State<ProfileTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Mode Tampilan', style: TextStyle(fontSize: 16)),
+              const Text('Tema', style: TextStyle(fontSize: 16)),
               DropdownButton<String>(
                 value: selectedTheme,
                 items: ['light', 'dark']
